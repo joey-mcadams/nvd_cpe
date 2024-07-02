@@ -10,32 +10,34 @@ class CpeParser:
     def __init__(self) -> None:
         self.format_prefix: str = "cpe:2.3:"
         self.uri_prefix: str = "cpe:/"
-        self.uri_binding_delimiterKey = ':~'
-        self.cpe_attributes = ["part",
-                               "vendor",
-                               "product",
-                               "version",
-                               "update",
-                               "edition",
-                               "language",
-                               "sw_edition",
-                               "target_sw",
-                               "target_hw",
-                               "other"]
+        self.uri_binding_delimiterKey: str = ':~'
+        self.cpe_attributes: List[str] = ["part",
+                                           "vendor",
+                                           "product",
+                                           "version",
+                                           "update",
+                                           "edition",
+                                           "language",
+                                           "sw_edition",
+                                           "target_sw",
+                                           "target_hw",
+                                           "other"]
 
     def parser(self, cpe: str) -> Dict[str, any]:
         """
         Parses given cpe value both in uri or formatted.
+
+        return: An attribute value dictionary
         """
         full_cpe: str = cpe.strip().lower()
-        full_cpe_decoded = urllib.parse.unquote(full_cpe)
+        full_cpe_decoded: str = urllib.parse.unquote(full_cpe)
 
         if not (self.__validateUri(full_cpe_decoded) or self.__validateFS(full_cpe_decoded)):
             raise CpeFormatError(f"given cpe {full_cpe_decoded} does not match cpe formats")
 
-        substring = self.__sub_string(full_cpe_decoded)
-        attributes = self.__get_attributes(full_cpe_decoded, substring)
-        cpe_values = dict(zip(self.cpe_attributes, attributes))
+        substring: str = self.__sub_string(full_cpe_decoded)
+        attributes: List[str] = self.__get_attributes(full_cpe_decoded, substring)
+        cpe_values: dict[str, any] = dict(zip(self.cpe_attributes, attributes))
 
         # Normalization
         # TODO: There's a better way to do this
@@ -48,7 +50,7 @@ class CpeParser:
         """
         Returns attributes of the cpe
         """
-        attributes = cpe_attributes.split(":")
+        attributes: list[str] = cpe_attributes.split(":")
         if self.__is_uri_binding_cpe(cpe) or self.uri_binding_delimiterKey not in cpe:
             return attributes
 

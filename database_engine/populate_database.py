@@ -3,6 +3,9 @@
 import os.path
 import sys
 
+from pydantic_layer.pydantic_models import PyReference, PyCPE23, PyCPE
+from pydantic_layer.translate_model import translate_pydantic_cpe_to_sqlalchemy
+
 # Need this to run from the command line
 sys.path.append('../')
 sys.path.append('./')
@@ -59,21 +62,21 @@ def populate_database() -> None:
             if grand_child.tag == '{http://cpe.mitre.org/dictionary/2.0}references':
                 new_references = []
                 for reference in grand_child:
-                    new_references.append(Reference(title=reference.text, href=reference.attrib["href"]))
+                    new_references.append(PyReference(title=reference.text, href=reference.attrib["href"]))
                 cpe_values["references"] = new_references
             # CPE item
             if grand_child.tag == '{http://scap.nist.gov/schema/cpe-extension/2.3}cpe23-item':
                 # TODO: Remove \ escape chars
                 # decoded = grand_child.attrib['name'].encode().decode('unicode_escape')
                 cpe23_values = cpe_parser.parser(grand_child.attrib['name'])
-                cpe_values["cpe_23"] = CPE23(**cpe23_values)
+                cpe_values["cpe_23"] = PyCPE23(**cpe23_values)
                 continue
             # Title
             if grand_child.tag == '{http://cpe.mitre.org/dictionary/2.0}title':
                 cpe_values["title"] = grand_child.text
                 continue
 
-        new_cpe: CPE = CPE(**cpe_values)
+        new_cpe: CPE = translate_pydantic_cpe_to_sqlalchemy(PyCPE(**cpe_values))
         new_db_entries.append(new_cpe)
 
     print("Done parsing XML")
@@ -83,14 +86,3 @@ def populate_database() -> None:
         session.commit()
 
     print("Done populating database")
-
-
-# if __name__ == "__main__":
-#     populate_database()
-
-
-
-
-
-
-

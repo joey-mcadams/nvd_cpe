@@ -5,8 +5,6 @@ from sqlalchemy.orm import DeclarativeBase, relationship
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 
-from pydantic import BaseModel
-
 
 class Base(DeclarativeBase):
     pass
