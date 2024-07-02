@@ -25,6 +25,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+*.pyc
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -164,8 +165,7 @@ cython_debug/
 .DS_Store/
 .DS_Store
 
-/database_engine/database.db
-/database_engine/test_database.db
+*.db
 
 official-cpe-dictionary_v2.2.xml
 official-cpe-dictionary_v2.3.xml
