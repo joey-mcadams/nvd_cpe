@@ -19,39 +19,47 @@ from .db_engine import get_engine, setup_metadata
 from .magic_hash_function import magic_hash
 
 
-def populate_database() -> None:
+def populate_database(remove_existing_database: bool = True) -> None:
     """
     This function reads the CVE XML input file and populates a local SQL Lite database for further analysis.
 
     :return: None
     """
+    real_path = os.path.dirname(os.path.realpath(__file__))
 
     # Clear old data if it's there
-    real_path = os.path.dirname(os.path.realpath(__file__))
-    db_filename = os.path.join(real_path, "database.db")
-    if os.path.isfile(os.path.join(db_filename)):
-        os.remove(db_filename)
+    if remove_existing_database:
+        db_filename = os.path.join(real_path, "database.db")
+        if os.path.isfile(db_filename):
+            os.remove(db_filename)
 
     # Database setup
     engine = get_engine()
     setup_metadata(engine)
 
+    # Go up one and read the DB file from the root.
     xml_filename = os.path.join(os.path.dirname(real_path), "official-cpe-dictionary_v2.3.xml")
 
     xml_root = read_xml(xml_filename)
     print("Done reading XML")
 
-    cpe_parser = CpeParser()
     new_db_entries: List[CPE] = []
+    parse_xml(new_db_entries, xml_root)
+    print("Done parsing XML")
 
+    with Session(engine) as session:
+        session.add_all(new_db_entries)
+        session.commit()
+    print("Done populating database")
+
+
+def parse_xml(new_db_entries, xml_root):
+    cpe_parser = CpeParser()
     for child in xml_root:
-        # TODO: This is dumb, find a better way to do this.
-        try:
-            cpe_value: str = child.attrib['name']
-        except KeyError:
-            # This happens with the generate tag. Ignore it
+        if child.tag != "{http://cpe.mitre.org/dictionary/2.0}cpe-item":
             continue
 
+        cpe_value: str = child.attrib['name']
         cpe_values = cpe_parser.parser(cpe_value)
 
         if not magic_hash(cpe_values.get("vendor"), "joey"):
@@ -64,13 +72,13 @@ def populate_database() -> None:
                 for reference in grand_child:
                     new_references.append(PyReference(title=reference.text, href=reference.attrib["href"]))
                 cpe_values["references"] = new_references
+
             # CPE item
             if grand_child.tag == '{http://scap.nist.gov/schema/cpe-extension/2.3}cpe23-item':
-                # TODO: Remove \ escape chars
-                # decoded = grand_child.attrib['name'].encode().decode('unicode_escape')
                 cpe23_values = cpe_parser.parser(grand_child.attrib['name'])
                 cpe_values["cpe_23"] = PyCPE23(**cpe23_values)
                 continue
+
             # Title
             if grand_child.tag == '{http://cpe.mitre.org/dictionary/2.0}title':
                 cpe_values["title"] = grand_child.text
@@ -78,11 +86,3 @@ def populate_database() -> None:
 
         new_cpe: CPE = translate_pydantic_cpe_to_sqlalchemy(PyCPE(**cpe_values))
         new_db_entries.append(new_cpe)
-
-    print("Done parsing XML")
-
-    with Session(engine) as session:
-        session.add_all(new_db_entries)
-        session.commit()
-
-    print("Done populating database")
