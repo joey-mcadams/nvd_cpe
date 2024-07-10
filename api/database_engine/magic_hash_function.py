@@ -14,10 +14,10 @@ def magic_hash(vendor: str, person_name="joey") -> bool:
 
     sha1 = hashlib.sha1()
     sha1.update(bytes(vendor, encoding="utf"))
-    first_letter_v = sha1.hexdigest()
+    vendor_digest = sha1.hexdigest()
 
     sha1 = hashlib.sha1()
     sha1.update(bytes(person_name, encoding="utf"))
-    first_letter_p = sha1.hexdigest()
+    person_digest = sha1.hexdigest()
 
-    return first_letter_v[0] == first_letter_p[0]
+    return vendor_digest[0] == person_digest[0]
