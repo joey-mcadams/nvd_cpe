@@ -1,16 +1,16 @@
 #/bin/bash python3
 
 import part2.cpe_parser
-from cpe_api.api_functions import check_cpe, get_common_products, mismatched_vendor_names, get_top_100_versions, \
+from api.cpe_api.api_functions import check_cpe, get_common_products, mismatched_vendor_names, get_top_100_versions, \
     get_top_10_domains, get_foreign_companies
-from database_engine.populate_database import populate_database
+import api.database_engine.populate_database
 
 print("*******************************")
 print("Part 1:")
 print("*******************************")
 
 print("* Populate Database w/ Magic Hash")
-populate_database()
+api.database_engine.populate_database.initialize_and_populate_database()
 
 print("* check_cpe(s: str) -> bool : checking for cpe:/a:phpmyadmin:phpmyadmin:4.7.7")
 print(check_cpe("cpe:/a:phpmyadmin:phpmyadmin:4.7.7"))

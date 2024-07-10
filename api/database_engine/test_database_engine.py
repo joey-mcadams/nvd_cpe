@@ -3,8 +3,8 @@ import time
 
 from sqlalchemy.orm import Session
 
-from db_engine import get_engine, setup_metadata
-from model import CPE23, CPE
+from .db_engine import get_engine, setup_metadata
+from .model import CPE23, CPE
 
 
 def test_add_cpe():

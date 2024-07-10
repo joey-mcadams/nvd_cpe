@@ -1,5 +1,5 @@
-from database_engine.model import CPE, CPE23, Reference
-from pydantic_layer.pydantic_models import PyCPE
+from api.database_engine.model import CPE, CPE23, Reference
+from api.database_engine.pydantic_layer.pydantic_models import PyCPE
 
 
 def translate_pydantic_cpe_to_sqlalchemy(py_cpe: PyCPE) -> CPE:

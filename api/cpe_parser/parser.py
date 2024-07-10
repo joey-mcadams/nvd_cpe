@@ -3,7 +3,7 @@ from __future__ import annotations
 import urllib
 from typing import Dict, List
 
-from cpe_parser.errors import CpeFormatError
+import api.cpe_parser
 
 
 class CpeParser:
@@ -33,7 +33,7 @@ class CpeParser:
         full_cpe_decoded: str = urllib.parse.unquote(full_cpe)
 
         if not (self.__validateUri(full_cpe_decoded) or self.__validateFS(full_cpe_decoded)):
-            raise CpeFormatError(f"given cpe {full_cpe_decoded} does not match cpe formats")
+            raise api.cpe_parser.CpeFormatError(f"given cpe {full_cpe_decoded} does not match cpe formats")
 
         substring: str = self.__sub_string(full_cpe_decoded)
         attributes: List[str] = self.__get_attributes(full_cpe_decoded, substring)

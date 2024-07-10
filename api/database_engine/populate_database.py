@@ -1,27 +1,23 @@
 #!/usr/bin/env python3
 
 import os.path
-import sys
 
-from pydantic_layer.pydantic_models import PyReference, PyCPE23, PyCPE
-from pydantic_layer.translate_model import translate_pydantic_cpe_to_sqlalchemy
-
-# Need this to run from the command line
-sys.path.append('../')
-sys.path.append('./')
+from api.database_engine.pydantic_layer.pydantic_models import PyReference, PyCPE23, PyCPE
+from api.database_engine.pydantic_layer.translate_model import translate_pydantic_cpe_to_sqlalchemy
 
 from typing import List
 from sqlalchemy.orm import Session
-from cpe_reader.read_cpe_xml import read_xml
-from cpe_parser.parser import CpeParser
-from database_engine.model import CPE, CPE23, Reference
-from .db_engine import get_engine, setup_metadata
-from .magic_hash_function import magic_hash
+from api.cpe_reader.read_cpe_xml import read_xml
+from api.cpe_parser import CpeParser
+from api.database_engine.model import CPE
+from api.database_engine.db_engine import get_engine, setup_metadata
+from api.database_engine.magic_hash_function import magic_hash
 
 
-def populate_database(remove_existing_database: bool = True) -> None:
+def initialize_and_populate_database(remove_existing_database: bool = True) -> None:
     """
-    This function reads the CVE XML input file and populates a local SQL Lite database for further analysis.
+    This function reads
+     the CVE XML input file and populates a local SQL Lite database for further analysis.
 
     :return: None
     """
@@ -37,14 +33,14 @@ def populate_database(remove_existing_database: bool = True) -> None:
     engine = get_engine()
     setup_metadata(engine)
 
-    # Go up one and read the DB file from the root.
-    xml_filename = os.path.join(os.path.dirname(real_path), "official-cpe-dictionary_v2.3.xml")
+    # Go up two and read the XML file from the root.
+    xml_filename = os.path.join(os.path.dirname(os.path.dirname(real_path)), "official-cpe-dictionary_v2.3.xml")
 
     xml_root = read_xml(xml_filename)
     print("Done reading XML")
 
     new_db_entries: List[CPE] = []
-    parse_xml(new_db_entries, xml_root)
+    parse_xml_object(new_db_entries, xml_root)
     print("Done parsing XML")
 
     with Session(engine) as session:
@@ -53,7 +49,7 @@ def populate_database(remove_existing_database: bool = True) -> None:
     print("Done populating database")
 
 
-def parse_xml(new_db_entries, xml_root):
+def parse_xml_object(new_db_entries, xml_root):
     cpe_parser = CpeParser()
     for child in xml_root:
         if child.tag != "{http://cpe.mitre.org/dictionary/2.0}cpe-item":

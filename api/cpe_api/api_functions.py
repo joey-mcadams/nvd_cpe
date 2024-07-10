@@ -3,8 +3,8 @@ from operator import itemgetter
 from sqlalchemy import func, desc, distinct, select, text
 from sqlalchemy.orm import Session
 
-from database_engine.model import CPE
-from database_engine.db_engine import get_engine
+from api.database_engine.model import CPE
+from api.database_engine.db_engine import get_engine
 
 
 def check_cpe(s: str) -> bool:

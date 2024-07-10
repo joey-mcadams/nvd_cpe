@@ -1,4 +1,4 @@
-from cpe_parser import CpeParser
+from api.cpe_parser import CpeParser
 
 
 def test_parse_cpe():
@@ -13,6 +13,7 @@ def test_parse_cpe():
                       'update': '',
                       'vendor': '$0.99_kindle_books_project',
                       'version': '6'}
+
 
 def test_parse_cpe23():
     test_string = "cpe:2.3:a:\@thi.ng\/egf_project:\@thi.ng\/egf:-:*:*:*:*:node.js:*:*"

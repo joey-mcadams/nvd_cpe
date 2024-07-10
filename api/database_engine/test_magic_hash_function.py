@@ -1,4 +1,4 @@
-from magic_hash_function import magic_hash
+from api.database_engine.magic_hash_function import magic_hash
 
 
 def test_magic_hash():

@@ -1,7 +1,4 @@
-import unittest
-
 from part2.cpe_parser import check_cpe, get_top_10_products, XML_FILENAME
-import sys
 
 
 def test_check_cpe():

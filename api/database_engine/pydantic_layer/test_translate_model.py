@@ -1,7 +1,7 @@
-from cpe_parser import CpeParser
+from api.cpe_parser import CpeParser
 from database_engine.model import CPE
-from pydantic_layer.pydantic_models import PyReference, PyCPE23, PyCPE
-from pydantic_layer.translate_model import translate_pydantic_cpe_to_sqlalchemy
+from database_engine.pydantic_layer.pydantic_models import PyReference, PyCPE23, PyCPE
+from database_engine.pydantic_layer.translate_model import translate_pydantic_cpe_to_sqlalchemy
 
 
 def test_translate_pydantic_cpe_to_sqlalchemy():
