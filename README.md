@@ -7,6 +7,10 @@ In the root of this folder, I need the following two files.
     official-cpe-dictionary_v2.2.xml
     official-cpe-dictionary_v2.3.xml
 
+These are available at 
+
+https://nvd.nist.gov/products/cpe
+
 To run all the code
 
 ```shell {interactive=True}
