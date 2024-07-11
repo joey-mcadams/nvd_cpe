@@ -103,7 +103,7 @@ FROM reference_item GROUP BY domain;
     return domains
 
 
-def get_foreign_companies() -> int:
+def get_foreign_companies() -> list[str]:
     """
     Returns the number of vendors or products with non-ASCII Unicode characters in their title.
 
@@ -113,11 +113,11 @@ def get_foreign_companies() -> int:
     with engine.connect() as connection:
         results = connection.execute(text("SELECT vendor, product, title FROM cpe_item")).all()
 
-    count = 0
+    out_companies = []
 
     for result in results:
         if not result[2].isascii():
-            count += 1
+            out_companies.append(result[2])
 
-    return count
+    return out_companies
 
